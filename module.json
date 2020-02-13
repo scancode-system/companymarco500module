@@ -1,0 +1,13 @@
+{
+    "name": "CompanyMarco500",
+    "alias": "companymarco500",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\CompanyMarco500\\Providers\\CompanyMarco500ServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

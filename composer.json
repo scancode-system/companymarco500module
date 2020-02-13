@@ -1,0 +1,29 @@
+{
+    "name": "scancode-system/company-marco500-module",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\CompanyMarco500\\Providers\\CompanyMarco500ServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CompanyMarco500\\": ""
+        }
+    },
+    "type": "laravel-module",
+    "require": {
+        "scancode-system/subsidiary-module":"^1.0"
+    }
+}
