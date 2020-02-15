@@ -3,8 +3,14 @@
 @section('content')
 
 <div class="card">
+	<div class="card-header">
+		Opções
+	</div>
 	<div class="card-body">
-		<a href="">		
+		<div class="d-flex">
+			<a href="{{ route('companymarco500.orders') }}" class="btn btn-lg btn-outline-primary flex-fill mr-3">Pedidos</a>
+			<a href="{{ route('companymarco500.products') }}" class="btn btn-lg btn-outline-primary flex-fill">Produtos</a>
+		</div>
 	</div>
 </div>
 

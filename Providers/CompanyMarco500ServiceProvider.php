@@ -25,6 +25,7 @@ class CompanyMarco500ServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->app->register(ViewComposerServiceProvider::class);
     }
 
     /**

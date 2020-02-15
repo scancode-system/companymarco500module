@@ -5,75 +5,37 @@ namespace Modules\CompanyMarco500\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Subsidiary\Entities\Subsidiary;
+use Modules\CompanyMarco500\Exports\ProductsExport;
+use Modules\CompanyMarco500\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CompanyMarco500Controller extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Response
-     */
-    public function index()
+
+    public function index(Request $request)
     {
         return view('companymarco500::index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Response
-     */
-    public function create()
+    public function orders(Request $request)
     {
-        return view('companymarco500::create');
+        return view('companymarco500::orders.orders');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request)
+    public function ordersExport(Request $request)
     {
-        //
+        return Excel::download(new OrdersExport(), 'Relatório de Vendas das Filials.xlsx');
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Response
-     */
-    public function show($id)
+    public function products(Request $request)
     {
-        return view('companymarco500::show');
+        return view('companymarco500::products.products');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Response
-     */
-    public function edit($id)
+    public function productsExport(Request $request, Subsidiary $subsidiary)
     {
-        return view('companymarco500::edit');
+        return Excel::download(new ProductsExport($subsidiary), 'Relatório de Produtos por Filial(s).xlsx');
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
