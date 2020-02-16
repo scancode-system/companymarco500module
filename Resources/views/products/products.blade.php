@@ -8,12 +8,17 @@
 	</div>
 	<div class="card-body">
 		<div class="d-flex">
-			{{ Form::model($subsidiary, ['route' => 'companymarco500.products', 'method' => 'GET', 'class' => 'flex-fill']) }}
-			{{ Form::select('id', $selectable_subsidiaries, null, ['id' => 'id', 'class' => 'form-control', 'placeholder' => 'Todas as Filiais']) }}
+			{{ Form::model($subsidiary, ['route' => 'companymarco500.products', 'method' => 'GET']) }}
+			<div class="d-flex">
+				{{ Form::select('id', $selectable_subsidiaries, null, ['class' => 'form-control', 'placeholder' => 'Todas as Filiais']) }}
+				{{ Form::date('date', null, ['class' => 'form-control ml-3']) }}
+				{{ Form::button('Filtrar', ['type' => 'submit', 'class' => 'btn btn-primary ml-3']) }}
+
+			</div>
 			{{ Form::close() }}
 
 			@if($subsidiary)
-			{{ Form::open(['route' => ['companymarco500.products.export', $subsidiary], 'method' => 'GET']) }}
+			{{ Form::open(['route' => ['companymarco500.products.export', $subsidiary, $subsidiary->date], 'method' => 'GET', ]) }}
 			{{ Form::button('<i class="fa fa-file-excel-o"></i> Relatório', ['type' => 'submit', 'class' => 'btn btn-outline-success ml-3']) }}
 			{{ Form::close() }}
 			@else
@@ -34,7 +39,7 @@
 		</table>
 
 	</div>
-</div>
+</div> 
 
 @endsection
 
@@ -49,12 +54,3 @@
 	Produtos
 </li>
 @endsection
-
-
-@push('scripts')
-<script>
-	$('#id').change(function() {
-		this.form.submit();
-	});
-</script>
-@endpush

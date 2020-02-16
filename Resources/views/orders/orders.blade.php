@@ -7,7 +7,14 @@
 		Pedidos
 	</div>
 	<div class="card-body">
-		{{ Form::open(['route' => ['companymarco500.orders.export'], 'method' => 'GET']) }}
+		{{ Form::open(['route' => 'companymarco500.orders', 'method' => 'GET']) }}
+		<div class="d-flex">
+			{{ Form::date('date', $date, ['class' => 'form-control']) }}
+			{{ Form::button('Filtrar', ['type' => 'submit', 'class' => 'btn btn-primary ml-3']) }}
+		</div>
+		{{ Form::close() }}
+
+		{{ Form::open(['route' => ['companymarco500.orders.export', $date], 'method' => 'GET']) }}
 		{{ Form::button('<i class="fa fa-file-excel-o"></i> Relatório', ['type' => 'submit', 'class' => 'btn btn-outline-success']) }}
 		{{ Form::close() }}
 

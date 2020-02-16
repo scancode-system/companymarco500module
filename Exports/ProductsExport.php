@@ -13,10 +13,12 @@ class ProductsExport implements FromCollection, WithStrictNullComparison
 
     private $total;
     private $subsidiary;
+    private $date;
 
-    public function __construct(Subsidiary $subsidiary) 
+    public function __construct(Subsidiary $subsidiary, $date) 
     {
         $this->subsidiary = $subsidiary;
+        $this->date = $date;
     }
 
     public function collection()
@@ -54,7 +56,16 @@ class ProductsExport implements FromCollection, WithStrictNullComparison
             $product->qty = 0;
             $product->total = 0;
 
-            $items = ItemRepository::loadSoldItemsByProduct($product);
+            if($this->date)
+            {
+                $items = ItemRepository::loadSoldItemsByProductDate($product, $this->date);
+                    //dd($items);
+            } else 
+            {
+                $items = ItemRepository::loadSoldItemsByProduct($product);
+            }
+
+
             foreach ($items as $item) 
             {
                 $row->qty += $item->qty;

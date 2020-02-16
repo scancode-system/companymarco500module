@@ -12,6 +12,7 @@ class ProductsComposer extends ServiceComposer
 {
 
     private $subsidiary;
+
     private $selectable_subsidiaries;
     private $products;
     private $total;
@@ -19,15 +20,22 @@ class ProductsComposer extends ServiceComposer
     public function assign($view)
     {
         $this->subsidiary();
+        $this->date();
         $this->selectable_subsidiaries();
         $this->products();
     }
 
     private function subsidiary()
     {
-        if(isset(request()->id)){
-            $this->subsidiary = SubsidiaryRepository::loadById(request()->id);
-        } 
+        $this->subsidiary = SubsidiaryRepository::loadById(request()->id);
+    }
+
+    private function date()
+    {
+        if($this->subsidiary)
+        {
+            $this->subsidiary->date = request()->date;
+        }
     }
 
     private function selectable_subsidiaries(){
@@ -45,7 +53,15 @@ class ProductsComposer extends ServiceComposer
                 $product->qty = 0;
                 $product->total = 0;
 
-                $items = ItemRepository::loadSoldItemsByProduct($product);
+                if($this->subsidiary->date)
+                {
+                    $items = ItemRepository::loadSoldItemsByProductDate($product, $this->subsidiary->date);
+                    //dd($items);
+                } else 
+                {
+                    $items = ItemRepository::loadSoldItemsByProduct($product);
+                }
+                
                 foreach ($items as $item) 
                 {
                     $product->qty += $item->qty;

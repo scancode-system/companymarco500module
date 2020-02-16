@@ -23,9 +23,9 @@ class CompanyMarco500Controller extends Controller
         return view('companymarco500::orders.orders');
     }
 
-    public function ordersExport(Request $request)
+    public function ordersExport(Request $request, $date = null)
     {
-        return Excel::download(new OrdersExport(), 'Relatório de Vendas das Filials.xlsx');
+        return Excel::download(new OrdersExport($date), 'Relatório de Vendas das Filials.xlsx');
     }
 
     public function products(Request $request)
@@ -33,9 +33,9 @@ class CompanyMarco500Controller extends Controller
         return view('companymarco500::products.products');
     }
 
-    public function productsExport(Request $request, Subsidiary $subsidiary)
+    public function productsExport(Request $request, Subsidiary $subsidiary, $date = null)
     {
-        return Excel::download(new ProductsExport($subsidiary), 'Relatório de Produtos por Filial(s).xlsx');
+        return Excel::download(new ProductsExport($subsidiary, $date), 'Relatório de Produtos por Filial(s).xlsx');
     }
 
 }

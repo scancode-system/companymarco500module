@@ -12,9 +12,14 @@ use Modules\Subsidiary\Entities\Subsidiary;
 class OrdersExport implements FromCollection, WithStrictNullComparison
 {
 
+    private $date;
     private $total;
     private $subsidiary;
 
+    public function __construct($date) 
+    {
+        $this->date = $date;
+    }
 
     public function collection()
     {
@@ -46,7 +51,13 @@ class OrdersExport implements FromCollection, WithStrictNullComparison
 
             $products = $subsidiary->products;
             foreach ($products as $product) {
-                $items = ItemRepository::loadSoldItemsByProduct($product); 
+                if($this->date)
+                {
+                    $items = ItemRepository::loadSoldItemsByProductDate($product, $this->date);
+                } else 
+                {
+                    $items = ItemRepository::loadSoldItemsByProduct($product);
+                }
                 foreach ($items as $item) {
                     $row->total += $item->total;
                 }
