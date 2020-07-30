@@ -25,6 +25,7 @@ class CompanyMarco500ServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerViews();
+        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
     /**

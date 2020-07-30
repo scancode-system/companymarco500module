@@ -1,18 +1,17 @@
 <?php
 
-namespace Modules\CompanyMarco500\Services;
+namespace Modules\CompanyMarco500\Services\Txt;
 
 use Illuminate\Support\Facades\Storage;
 use Modules\Order\Repositories\OrderRepository;
+use Modules\Dashboard\Services\Txt\TxtService;
 use  ZipArchive;
 
-class TxtService 
+class PedidosMarco500Service extends TxtService
 {
 
-	public function run()
+	public function build()
 	{
-		Storage::deleteDirectory('txt');
-
 		$orders = OrderRepository::loadClosedOrders();
 		foreach ($orders as $order) {
 			foreach ($order->items as $item) {
@@ -27,9 +26,6 @@ class TxtService
 				$this->item($file_path, $item);
 			}
 		}
-
-		$this->zip();
-		Storage::deleteDirectory('txt');
 	}
 
 	private function header($file_path, $order, $item)
@@ -85,19 +81,6 @@ class TxtService
 	}
 
 
-
-	public function zip()
-	{
-		$files = Storage::allFiles('txt');
-		$zip_path = storage_path('app/txt.zip'); 
-		$zip = new ZipArchive;
-		$zip->open($zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-		foreach ($files as $file) {
-			$zip->addFile(storage_path('app/'.$file), $file);
-		}
-		$zip->close();
-	}	
-
 	private function file_path($item)
 	{
 		$product = $item->product;
@@ -110,7 +93,7 @@ class TxtService
 			$from = 'nacional';
 		}
 
-		return 'txt/filial_'.$subsidiary_id.'/'.$from.'/'.addString($subsidiary_id, 6, '0').'_'.addString($item->order->id, 7, '0') . '.txt';
+		return $this->path_base.'filial_'.$subsidiary_id.'/'.$from.'/'.addString($subsidiary_id, 6, '0').'_'.addString($item->order->id, 7, '0') . '.txt';
 	}
 
 	private function subsidiary_id($item)
@@ -120,11 +103,6 @@ class TxtService
 		} else {
 			return '';
 		}
-	}
-
-	public function download()
-	{
-		return response()->download(storage_path('app/txt.zip'))->deleteFileAfterSend();;
 	}
 
 }

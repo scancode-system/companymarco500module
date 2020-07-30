@@ -10,6 +10,5 @@ Route::prefix('companymarco500')->group(function() {
     Route::get('/products', 'CompanyMarco500Controller@products')->name('companymarco500.products');
     Route::get('/products/export/{subsidiary}/{date?}', 'CompanyMarco500Controller@productsExport')->name('companymarco500.products.export');
 
-    Route::get('export/txt/orders', 'ExportController@txtOrders')->name('companymarco500.export.txt.orders');
 });
 
