@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Subsidiary\Entities\Subsidiary;
 use Modules\CompanyMarco500\Exports\ProductsExport;
 use Modules\CompanyMarco500\Exports\OrdersExport;
+use Modules\CompanyMarco500\Http\Requests\OrderRequest;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CompanyMarco500Controller extends Controller
@@ -18,9 +19,13 @@ class CompanyMarco500Controller extends Controller
         return view('companymarco500::index');
     }
 
-    public function orders(Request $request)
+    public function orders(OrderRequest $request)
     {
-        return view('companymarco500::orders.orders');
+        if($request->action != 'excel'){
+            return view('companymarco500::orders.orders', ['start' => $request->start, 'end' => $request->end, 'start_end_date' => $request->start_end_date]);
+        } else {
+            return Excel::download(new OrdersExport($request->start, $request->end), 'Relatório de Vendas das Filials.xlsx');
+        }
     }
 
     public function ordersExport(Request $request, $date = null)

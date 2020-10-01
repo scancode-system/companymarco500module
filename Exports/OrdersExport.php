@@ -4,76 +4,100 @@ namespace Modules\CompanyMarco500\Exports;
 use Modules\Product\Repositories\ProductRepository;
 use Modules\Subsidiary\Repositories\SubsidiaryRepository;
 use Modules\Order\Repositories\ItemRepository;
+use Modules\Order\Repositories\OrderRepository;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Modules\Subsidiary\Entities\Subsidiary;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class OrdersExport implements FromCollection, WithStrictNullComparison
+class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAutoSize
 {
 
-    private $date;
+    private $dates;
+    private $data;
+
     private $total;
-    private $subsidiary;
 
-    public function __construct($date) 
+
+    public function __construct($start, $end) 
     {
-        $this->date = $date;
+                $this->data();
+        $this->dates($start, $end);
+        $this->header();
+        $this->body();
+        $this->footer();
     }
-
-    public function collection()
-    {
-        return new Collection($this->data());
-    }
-
 
     private function data(){
-    	return array_merge($this->header(), $this->body(), $this->footer());
+        $this->data = collect([]);
+    }
+
+    private function dates($start, $end){
+         $this->dates = OrderRepository::loadClosingDatesBetweenClosingDates($start, $end);
     }
 
     private function header(){
-    	return [
-            ['Filial', 'Total']
-        ];
+        $this->data->push(
+            collect(['Filial'])->merge(
+                $this->dates
+            )->merge(
+                collect(['Total'])
+            ));
     }
 
     private function body(){
-        $body = [];
-        $total = 0;
-
         $subsidiaries = SubsidiaryRepository::load();
 
         foreach ($subsidiaries as $subsidiary) {
-            $row = (object) [
-                'name' => $subsidiary->name,
-                'total' => 0
-            ];
+            $subsidiary->total = 0;
+            foreach ($this->dates as $date) {
+                $subsidiary->$date = 0;
+            }
 
             $products = $subsidiary->products;
             foreach ($products as $product) {
-                if($this->date)
-                {
-                    $items = ItemRepository::loadSoldItemsByProductDate($product, $this->date);
-                } else 
-                {
-                    $items = ItemRepository::loadSoldItemsByProduct($product);
+                $items = ItemRepository::loadSoldItemsByProduct($product);
+                if($items->count() > 0){
+                    $date = $items->first()->order->closing_date->format('Y-m-d');
                 }
-                foreach ($items as $item) {
-                    $row->total += $item->total;
+                if($this->dates->contains($date)){
+                    foreach ($items as $item) {
+                        $subsidiary->total += $item->total;
+                        $subsidiary->{$date} += $item->total;
+                    }
                 }
             }
-
-            $total += $row->total;
-            array_push($body, $row);
+            $this->total += $subsidiary->total;
         }
 
-        $this->total = $total;
-        return (new Collection($body))->sortByDesc('total')->toArray();
+        $subsidiaries = $subsidiaries->sortByDesc('total');
+
+        foreach ($subsidiaries as $subsidiary) {
+
+            $row = collect([]);
+            $row->push($subsidiary->name);
+            foreach ($this->dates as $date) {
+                $row->push('R$'.number_format($subsidiary->{$date}, 2, ',', '.'));
+            }
+            $row->push('R$'.number_format($subsidiary->total, 2, ',', '.'));
+             $this->data->push($row);
+        }
+    }
+
+    private function footer(){
+        $footer =  collect(['TOTAL']);
+        foreach ($this->dates as $date) {
+                $footer->push('');
+        }
+        $footer->push('R$'.number_format($this->total, 2, ',', '.'));
+        $this->data->push($footer);
     }
 
 
-    private function footer(){
-        return [['TOTAL', $this->total]];
+    public function collection()
+    {
+        return new Collection($this->data);
     }
 
 }

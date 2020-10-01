@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\View;
 use Modules\CompanyMarco500\Http\ViewComposers\ProductsComposer;
 use Modules\CompanyMarco500\Http\ViewComposers\OrdersComposer;
 
+use Modules\Subsidiary\Http\ViewComposers\Pdf\OrderComposer;
+
 class ViewComposerServiceProvider extends ServiceProvider 
 {
 
@@ -14,6 +16,9 @@ class ViewComposerServiceProvider extends ServiceProvider
 	{
 		View::composer('companymarco500::products.products', ProductsComposer::class);
 		View::composer('companymarco500::orders.orders', OrdersComposer::class);
+
+		// pdf
+		View::composer('companymarco500::pdf.order', OrderComposer::class);
 	}
 
 	public function register() 
