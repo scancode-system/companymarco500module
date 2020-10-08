@@ -32,6 +32,11 @@ class OrderRequest extends FormRequest
                 'start_end_date' => \Carbon\Carbon::now()->format('d/m/Y - d/m/Y')
             ]);
         } 
+        if(!$this->order){
+            $this->merge([
+                'order' => 'name'
+            ]);
+        }
 
         $start_end_date = $this->start_end_date;
         $start_end_date = str_replace(' ', '', $start_end_date);

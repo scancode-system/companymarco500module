@@ -10,6 +10,7 @@ use Modules\CompanyMarco500\Exports\ProductsExport;
 use Modules\CompanyMarco500\Exports\OrdersExport;
 use Modules\CompanyMarco500\Http\Requests\OrderRequest;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
 class CompanyMarco500Controller extends Controller
 {
@@ -21,10 +22,12 @@ class CompanyMarco500Controller extends Controller
 
     public function orders(OrderRequest $request)
     {
-        if($request->action != 'excel'){
-            return view('companymarco500::orders.orders', ['start' => $request->start, 'end' => $request->end, 'start_end_date' => $request->start_end_date]);
+        if($request->action == 'web'){
+            return view('companymarco500::orders.orders', ['start' => $request->start, 'end' => $request->end, 'start_end_date' => $request->start_end_date, 'order' => $request->order]);
+        } else if($request->action == 'excel') {
+            return Excel::download(new OrdersExport($request->start, $request->end, $request->order), 'Relatório de Vendas das Filials.xlsx');
         } else {
-            return Excel::download(new OrdersExport($request->start, $request->end), 'Relatório de Vendas das Filials.xlsx');
+            return (PDF::loadView('companymarco500::pdf.reports.order', ['start' => $request->start, 'end' => $request->end, 'start_end_date' => $request->start_end_date, 'order' => $request->order]))->setOrientation('landscape')->download('Relatório de venda das filiais.pdf');
         }
     }
 

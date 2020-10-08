@@ -9,6 +9,7 @@ use Modules\CompanyMarco500\Http\ViewComposers\OrdersComposer;
 
 use Modules\Subsidiary\Http\ViewComposers\Pdf\OrderComposer;
 
+
 class ViewComposerServiceProvider extends ServiceProvider 
 {
 
@@ -19,6 +20,7 @@ class ViewComposerServiceProvider extends ServiceProvider
 
 		// pdf
 		View::composer('companymarco500::pdf.order', OrderComposer::class);
+		View::composer('companymarco500::pdf.reports.order', OrdersComposer::class);
 	}
 
 	public function register() 

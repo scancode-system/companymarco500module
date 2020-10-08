@@ -16,14 +16,16 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
 
     private $dates;
     private $data;
+    private $order;
 
     private $total;
 
 
-    public function __construct($start, $end) 
+    public function __construct($start, $end, $order) 
     {
-                $this->data();
+        $this->data();
         $this->dates($start, $end);
+        $this->order($order);
         $this->header();
         $this->body();
         $this->footer();
@@ -34,8 +36,12 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
     }
 
     private function dates($start, $end){
-         $this->dates = OrderRepository::loadClosingDatesBetweenClosingDates($start, $end);
+        $this->dates = OrderRepository::loadClosingDatesBetweenClosingDates($start, $end);
     }
+
+    private function order($order){
+       $this->order = $order;
+   }
 
     private function header(){
         $this->data->push(
@@ -60,18 +66,23 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
                 $items = ItemRepository::loadSoldItemsByProduct($product);
                 if($items->count() > 0){
                     $date = $items->first()->order->closing_date->format('Y-m-d');
-                                    if($this->dates->contains($date)){
-                    foreach ($items as $item) {
-                        $subsidiary->total += $item->total;
-                        $subsidiary->{$date} += $item->total;
+                    if($this->dates->contains($date)){
+                        foreach ($items as $item) {
+                            $subsidiary->total += $item->total;
+                            $subsidiary->{$date} += $item->total;
+                        }
                     }
-                }
                 }
             }
             $this->total += $subsidiary->total;
         }
 
         $subsidiaries = $subsidiaries->sortByDesc('total');
+        if($this->order == 'name'){
+            $subsidiaries = $subsidiaries->sortBy($this->order);
+        } else {
+            $subsidiaries = $subsidiaries->sortByDesc($this->order);
+        }
 
         foreach ($subsidiaries as $subsidiary) {
 
@@ -81,14 +92,14 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
                 $row->push('R$'.number_format($subsidiary->{$date}, 2, ',', '.'));
             }
             $row->push('R$'.number_format($subsidiary->total, 2, ',', '.'));
-             $this->data->push($row);
+            $this->data->push($row);
         }
     }
 
     private function footer(){
         $footer =  collect(['TOTAL']);
         foreach ($this->dates as $date) {
-                $footer->push('');
+            $footer->push('');
         }
         $footer->push('R$'.number_format($this->total, 2, ',', '.'));
         $this->data->push($footer);

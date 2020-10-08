@@ -15,6 +15,7 @@ class OrdersComposer extends ServiceComposer
 
     private $start;
     private $end;
+    private $order;
 
     private $subsidiaries;
     protected $dates;
@@ -24,6 +25,7 @@ class OrdersComposer extends ServiceComposer
     {
         $this->start($view);
         $this->end($view);
+        $this->order($view);
         $this->dates();
         $this->total();
         $this->subsidiaries();
@@ -38,6 +40,11 @@ class OrdersComposer extends ServiceComposer
     {
         $this->end = $view->end;
     }
+
+    private function order($view)
+    {
+        $this->order = $view->order;
+    }    
 
     private function dates()
     {
@@ -65,17 +72,21 @@ class OrdersComposer extends ServiceComposer
                 if($items->count() > 0){
                     $date = $items->first()->order->closing_date->format('Y-m-d');
                     if($this->dates->contains($date)){
-                    foreach ($items as $item) {
-                        $subsidiary->total += $item->total;
-                        $subsidiary->{$date} += $item->total;
+                        foreach ($items as $item) {
+                            $subsidiary->total += $item->total;
+                            $subsidiary->{$date} += $item->total;
+                        }
                     }
-                }
                 }
             }
             $this->total += $subsidiary->total;
         }
 
-        $this->subsidiaries = $subsidiaries->sortByDesc('total');
+        if($this->order == 'name'){
+            $this->subsidiaries = $subsidiaries->sortBy($this->order);
+        } else {
+            $this->subsidiaries = $subsidiaries->sortByDesc($this->order);
+        }
     }
 
 
