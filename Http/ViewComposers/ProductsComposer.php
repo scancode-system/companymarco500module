@@ -16,26 +16,24 @@ class ProductsComposer extends ServiceComposer
     private $selectable_subsidiaries;
     private $products;
     private $total;
+    private $date;
 
     public function assign($view)
     {
-        $this->subsidiary();
-        $this->date();
+        $this->subsidiary($view);
+        $this->date($view);
         $this->selectable_subsidiaries();
         $this->products();
     }
 
-    private function subsidiary()
+    private function subsidiary($view)
     {
-        $this->subsidiary = SubsidiaryRepository::loadById(request()->id);
+        $this->subsidiary = SubsidiaryRepository::loadById($view->subsidiary);
     }
 
-    private function date()
+    private function date($view)
     {
-        if($this->subsidiary)
-        {
-            $this->subsidiary->date = request()->date;
-        }
+        $this->date = $view->date; //request()->date;
     }
 
     private function selectable_subsidiaries(){
@@ -48,15 +46,14 @@ class ProductsComposer extends ServiceComposer
         if($this->subsidiary)
         {
             $products = $this->subsidiary->products;
-            foreach ($products as $product) 
+            foreach ($products as $key => $product) 
             {
                 $product->qty = 0;
                 $product->total = 0;
 
                 if($this->subsidiary->date)
                 {
-                    $items = ItemRepository::loadSoldItemsByProductDate($product, $this->subsidiary->date);
-                    //dd($items);
+                    $items = ItemRepository::loadSoldItemsByProductDate($product, $this->date);
                 } else 
                 {
                     $items = ItemRepository::loadSoldItemsByProduct($product);
@@ -69,9 +66,13 @@ class ProductsComposer extends ServiceComposer
                 }
 
                 $total += $product->total;
+
+                if($product->total == 0){
+                    $products->forget($key);
+                }
             }
 
-            $products = $products->sortByDesc('total');
+            $products = $products->sortByDesc('qty');
         } else {
             $products = [];
         }
@@ -85,6 +86,7 @@ class ProductsComposer extends ServiceComposer
         $view->with('selectable_subsidiaries', $this->selectable_subsidiaries);
         $view->with('products', $this->products);
         $view->with('total', $this->total);
+        $view->with('date', $this->date);
     }
 
 }

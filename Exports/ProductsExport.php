@@ -73,11 +73,15 @@ class ProductsExport implements FromCollection, WithStrictNullComparison
             }
 
             $total += $row->total;
-            array_push($body, $row);
+
+            if($row->total > 0){
+                    array_push($body, $row);
+                }
+            
         }
 
         $this->total = $total;
-        return (new Collection($body))->sortByDesc('total')->toArray();
+        return (new Collection($body))->sortByDesc('qty')->toArray();
 
     }
 

@@ -1,4 +1,4 @@
-@extends('dashboard::layouts.master')
+@extends('dashboard::layouts.master') 
 
 @section('content')
 
@@ -11,18 +11,20 @@
 			{{ Form::model($subsidiary, ['route' => 'companymarco500.products', 'method' => 'GET']) }}
 			<div class="d-flex">
 				{{ Form::select('id', $selectable_subsidiaries, null, ['class' => 'form-control', 'placeholder' => 'Todas as Filiais']) }}
-				{{ Form::date('date', null, ['class' => 'form-control ml-3']) }}
+				{{ Form::date('date', $date, ['class' => 'form-control ml-3']) }}
 				{{ Form::button('Filtrar', ['type' => 'submit', 'class' => 'btn btn-primary ml-3']) }}
 
 			</div>
 			{{ Form::close() }}
 
 			@if($subsidiary)
-			{{ Form::open(['route' => ['companymarco500.products.export', $subsidiary, $subsidiary->date], 'method' => 'GET', ]) }}
-			{{ Form::button('<i class="fa fa-file-excel-o"></i> Relatório', ['type' => 'submit', 'class' => 'btn btn-outline-success ml-3']) }}
+			{{ Form::open(['route' => ['companymarco500.products.export', $subsidiary, $date], 'method' => 'GET', ]) }}
+			{{ Form::button('<i class="fa fa-file-excel-o"></i>', ['type' => 'submit', 'class' => 'btn btn-outline-success ml-3']) }}
 			{{ Form::close() }}
-			@else
-			{{ Form::button('<i class="fa fa-file-excel-o"></i> Relatório', ['type' => 'submit', 'class' => 'btn btn-outline-success ml-3', 'disabled' => 'disabled']) }}
+
+			{{ Form::open(['route' => ['companymarco500.products.export.pdf', $subsidiary, $date], 'method' => 'GET', ]) }}
+			{{ Form::button('<i class="fa fa-file-pdf-o"></i>', ['type' => 'submit', 'class' => 'btn btn-outline-danger ml-3']) }}
+			{{ Form::close() }}
 			@endif
 
 		</div>

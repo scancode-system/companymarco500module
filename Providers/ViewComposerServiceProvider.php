@@ -21,6 +21,7 @@ class ViewComposerServiceProvider extends ServiceProvider
 		// pdf
 		View::composer('companymarco500::pdf.order', OrderComposer::class);
 		View::composer('companymarco500::pdf.reports.order', OrdersComposer::class);
+		View::composer('companymarco500::pdf.reports.product', ProductsComposer::class);
 	}
 
 	public function register() 

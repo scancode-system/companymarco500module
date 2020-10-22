@@ -38,12 +38,17 @@ class CompanyMarco500Controller extends Controller
 
     public function products(Request $request)
     {
-        return view('companymarco500::products.products');
+        return view('companymarco500::products.products', ['subsidiary' => request()->id, 'date' => request()->date]);
     }
 
     public function productsExport(Request $request, Subsidiary $subsidiary, $date = null)
     {
         return Excel::download(new ProductsExport($subsidiary, $date), 'Relatório de Produtos por Filial(s).xlsx');
+    }
+
+    public function productsExportPdf(Request $request, Subsidiary $subsidiary, $date = null)
+    {
+        return (PDF::loadView('companymarco500::pdf.reports.product', ['subsidiary' => $subsidiary->id, 'date' => $date]))->download('Relatório de Produtos por Filial(s).pdf');
     }
 
 }

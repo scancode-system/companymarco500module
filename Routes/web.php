@@ -8,7 +8,8 @@ Route::prefix('companymarco500')->group(function() {
     Route::get('/orders/export/{date?}', 'CompanyMarco500Controller@ordersExport')->name('companymarco500.orders.export');
 
     Route::get('/products', 'CompanyMarco500Controller@products')->name('companymarco500.products');
-    Route::get('/products/export/{subsidiary}/{date?}', 'CompanyMarco500Controller@productsExport')->name('companymarco500.products.export');
+    Route::get('/products/export/xlsx/{subsidiary}/{date?}', 'CompanyMarco500Controller@productsExport')->name('companymarco500.products.export');
+    Route::get('/products/export/pdf/{subsidiary}/{date?}', 'CompanyMarco500Controller@productsExportPdf')->name('companymarco500.products.export.pdf');
 
 });
 
