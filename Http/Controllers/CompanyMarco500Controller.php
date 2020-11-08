@@ -11,6 +11,7 @@ use Modules\CompanyMarco500\Exports\OrdersExport;
 use Modules\CompanyMarco500\Http\Requests\OrderRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use Modules\Saller\Entities\Saller;
 
 class CompanyMarco500Controller extends Controller
 {
@@ -49,6 +50,14 @@ class CompanyMarco500Controller extends Controller
     public function productsExportPdf(Request $request, Subsidiary $subsidiary, $date = null)
     {
         return (PDF::loadView('companymarco500::pdf.reports.product', ['subsidiary' => $subsidiary->id, 'date' => $date]))->download('Relatório de Produtos por Filial(s).pdf');
+    }
+
+    public function sallerClient(Request $request){
+        return view('companymarco500::xlsx.saller_client');
+    }
+
+    public function client(Request $request){
+        return view('companymarco500::xlsx.client');
     }
 
 }
