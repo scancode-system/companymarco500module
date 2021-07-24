@@ -27,8 +27,7 @@
 	</tr>
 </table>-->
 <div class="mb-2">
-Pedidos mínimos R$0,00 - 28<br>
-Pagamento antecipados com 5% de DESCONTO
+PRAZOS DE PAGAMENTO ESTABELECIDO PELA MARCO500.<br>  CLIENTE NOVO/PRIMEIRA COMPRA 30% DO VALOR ANTECIPADO. <br>ATENÇÃO PARA O VALOR MÍNIMO DE COMPRA.
 </div>
 
 <strong>OBSERVAÇÔES:</strong><br>

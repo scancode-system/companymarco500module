@@ -70,13 +70,13 @@ class OrdersComposer extends ServiceComposer
             foreach ($products as $product) {
                 $items = ItemRepository::loadSoldItemsByProduct($product);
                 if($items->count() > 0){
-                    $date = $items->first()->order->closing_date->format('Y-m-d');
-                    if($this->dates->contains($date)){
                         foreach ($items as $item) {
-                            $subsidiary->total += $item->total;
-                            $subsidiary->{$date} += $item->total;
+                            $date = $item->order->closing_date->format('Y-m-d');
+                            if($this->dates->contains($date)){
+                                $subsidiary->total += $item->total;
+                                $subsidiary->{$date} += $item->total;
+                            }
                         }
-                    }
                 }
             }
             $this->total += $subsidiary->total;

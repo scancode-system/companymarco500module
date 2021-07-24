@@ -65,9 +65,9 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
             foreach ($products as $product) {
                 $items = ItemRepository::loadSoldItemsByProduct($product);
                 if($items->count() > 0){
-                    $date = $items->first()->order->closing_date->format('Y-m-d');
-                    if($this->dates->contains($date)){
-                        foreach ($items as $item) {
+                    foreach ($items as $item) {
+                        $date = $item->order->closing_date->format('Y-m-d');
+                        if($this->dates->contains($date)){
                             $subsidiary->total += $item->total;
                             $subsidiary->{$date} += $item->total;
                         }
