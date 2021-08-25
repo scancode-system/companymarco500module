@@ -1,15 +1,16 @@
 <?php 
 namespace Modules\CompanyMarco500\Exports;
 
-use Modules\Product\Repositories\ProductRepository;
-use Modules\Subsidiary\Repositories\SubsidiaryRepository;
+use stdClass;
+use Illuminate\Support\Collection;
+use Modules\Subsidiary\Entities\Subsidiary;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Modules\Order\Repositories\ItemRepository;
 use Modules\Order\Repositories\OrderRepository;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Illuminate\Support\Collection;
+use Modules\Product\Repositories\ProductRepository;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
-use Modules\Subsidiary\Entities\Subsidiary;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Modules\Subsidiary\Repositories\SubsidiaryRepository;
 
 class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAutoSize
 {
@@ -19,6 +20,7 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
     private $order;
 
     private $total;
+    private $total_dates;
 
 
     public function __construct($start, $end, $order) 
@@ -53,6 +55,11 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
     }
 
     private function body(){
+        $this->total_dates = new stdClass();
+        foreach ($this->dates as $date) {
+            $this->total_dates->{$date} = 0;
+        }
+
         $subsidiaries = SubsidiaryRepository::load();
 
         foreach ($subsidiaries as $subsidiary) {
@@ -70,6 +77,7 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
                         if($this->dates->contains($date)){
                             $subsidiary->total += $item->total;
                             $subsidiary->{$date} += $item->total;
+                            $this->total_dates->{$date} += $item->total;
                         }
                     }
                 }
@@ -99,7 +107,7 @@ class OrdersExport implements FromCollection, WithStrictNullComparison, ShouldAu
     private function footer(){
         $footer =  collect(['TOTAL']);
         foreach ($this->dates as $date) {
-            $footer->push('');
+            $footer->push('R$'.number_format($this->total_dates->{$date}, 2, ',', '.'));
         }
         $footer->push('R$'.number_format($this->total, 2, ',', '.'));
         $this->data->push($footer);

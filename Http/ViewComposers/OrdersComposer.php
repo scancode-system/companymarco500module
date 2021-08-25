@@ -2,12 +2,13 @@
 
 namespace Modules\CompanyMarco500\Http\ViewComposers;
 
-use Modules\Dashboard\Services\ViewComposer\ServiceComposer;
-use Modules\Subsidiary\Repositories\SubsidiaryRepository;
-use Modules\Product\Repositories\ProductRepository;
+use stdClass;
+use Modules\Order\Entities\Order;
 use Modules\Order\Repositories\ItemRepository;
 use Modules\Order\Repositories\OrderRepository;
-use Modules\Order\Entities\Order;
+use Modules\Product\Repositories\ProductRepository;
+use Modules\Subsidiary\Repositories\SubsidiaryRepository;
+use Modules\Dashboard\Services\ViewComposer\ServiceComposer;
 
 
 class OrdersComposer extends ServiceComposer 
@@ -20,6 +21,7 @@ class OrdersComposer extends ServiceComposer
     private $subsidiaries;
     protected $dates;
     private $total;
+    private $total_dates;
 
     public function assign($view)
     {
@@ -28,6 +30,7 @@ class OrdersComposer extends ServiceComposer
         $this->order($view);
         $this->dates();
         $this->total();
+        $this->total_dates();
         $this->subsidiaries();
     }
 
@@ -56,6 +59,15 @@ class OrdersComposer extends ServiceComposer
         $this->total = 0;
     }
 
+    private function total_dates()
+    {
+        $this->total_dates = new stdClass();
+        foreach ($this->dates as $date) {
+            $this->total_dates->{$date} = 0;
+        }
+
+    }
+
     private function subsidiaries()
     {
         $subsidiaries = SubsidiaryRepository::load();
@@ -75,6 +87,7 @@ class OrdersComposer extends ServiceComposer
                             if($this->dates->contains($date)){
                                 $subsidiary->total += $item->total;
                                 $subsidiary->{$date} += $item->total;
+                                $this->total_dates->{$date} += $item->total;
                             }
                         }
                 }
@@ -94,6 +107,7 @@ class OrdersComposer extends ServiceComposer
         $view->with('subsidiaries', $this->subsidiaries);
         $view->with('dates', $this->dates);
         $view->with('total', $this->total);
+        $view->with('total_dates', $this->total_dates);
     }
 
 }

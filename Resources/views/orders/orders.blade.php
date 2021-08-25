@@ -42,7 +42,7 @@
 				<tr>
 					<td class="align-middle"><strong>Total</strong></td>
 					@foreach($dates as $date)
-					<td></td>
+					<td>@currency($total_dates->{$date})</td>
 					@endforeach
 					<td class="align-middle text-center"><strong>@currency($total)</strong></td>
 				</tr>
